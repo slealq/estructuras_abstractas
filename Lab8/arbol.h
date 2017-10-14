@@ -2,7 +2,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
-#include "pila.h"
+#include "cola2.h"
 
 #ifndef CLASEARBOL
 #define CLASEARBOL
@@ -179,61 +179,44 @@ class C_BinTree {
   void printTree(void){
     // imprimir con forma de arbol
     S_node * nodo = this->raiz;
-    int pos = 0;
-    int altura = height();
     string dash_izq = "/";
     string dash_der = "\\";
     string enter = "\n";
     string espacio = "  ";
-    vector<C_pila<int>> vector(altura);
-    
-    // Ahora por cada nivel de altura tengo que imprimir 
-    cout << " \t == Arbolito == " << endl;
-    apilar_nodo(vector, nodo, pos);
-    cout << "Primera fila " << endl;
-    cout << vector[0].quitar() << endl;
-    cout << vector[0].quitar() << endl;
-    cout << " Segunda fila " << endl;
-    cout << vector[1].quitar() << endl;
-    cout << vector[1].quitar() << endl;
-    cout << vector[1].quitar() << endl;
-    cout << " izquierda de raiz " << endl;
-    cout << this->raiz->left->dato << endl;
-    cout << " derecha de raiz " << endl;
-    cout << this->raiz->right->dato << endl;
-    cout << " izquierda de izq " << endl;
-    cout << this->raiz->left->left->dato << endl;
+    C_cola2<S_node*> cola;
+    cout << "arbol a mano" << endl;
+    cout << nodo->dato << endl;
+    cout << nodo->left->dato << endl;
+    cout << nodo->right->dato << endl;
+    cout << nodo->left->left->dato << endl;
+    cout << nodo->left->left->left->dato << endl;
+
+    cout << "" << endl;
+    cola.agregar(nodo);
+    while(cola.is_empty() == false){
+      nodo = cola.quitar();
+      if(nodo==NULL){
+	cout << "NULL" << endl;
+	continue;
+      }
+      cout << nodo->dato << endl;
+      if(nodo->left){
+	cola.agregar(nodo->left);
+      }//if
+      else{
+	cola.agregar(NULL);
+      }
+      if(nodo->right){
+	cola.agregar(nodo->right);
+      }//if
+      else{
+	cola.agregar(NULL);
+      }
+      delete nodo;
+    }
+    cout << "" << endl;
     
   }// printTree
-  
-  void apilar_nodo(vector<C_pila<int>> & vector, S_node * nodo, int height){
-    if(nodo->left){
-      //existe algo en nodo left
-      height+=1;
-      apilar_nodo(vector, nodo->left, height);
-      height-=1;
-    }//if
-    else{
-      if(nodo->right){
-	vector[height].agregar(NULL);
-      }
-    }
-
-    if(nodo->right){
-      //existe algo en nodo right
-      height+=1;
-      apilar_nodo(vector, nodo->right, height);
-      height-=1;
-    }//if
-    else{
-      if(nodo->left){
-	vector[height].agregar(NULL);
-      }
-    }
-    vector[height].agregar(nodo->dato);
-  }// apilar_nodo
-  
-
 };
 
 
