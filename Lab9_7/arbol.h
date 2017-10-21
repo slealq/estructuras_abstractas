@@ -33,6 +33,9 @@ class C_BinTree {
   void insertBST(int dato){
     // Cover para insertar un dato desde arriba
     insertBST(dato, this->raiz);
+
+    // actualizar height
+    height = height();
   }
   
   void insertBST(int dato, S_node * nodo){
@@ -150,6 +153,9 @@ class C_BinTree {
     // Funcion dummy para iniciar recursion
     //    cout << "Aqui" << endl;
     delete_tree(dato, this->raiz);
+
+    // actualizar la altura
+    height = height();
   }
   
   bool delete_tree(int dato, S_node * nodo){
@@ -320,6 +326,9 @@ class C_BinTree {
     aux->right = NULL;
 
     insertComplete(aux, this->raiz);
+
+    // actualizar height
+    height = height();
 
   }// insertComplete
 
