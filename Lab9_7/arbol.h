@@ -15,6 +15,8 @@ struct S_node{
   int dato;
   S_node *left;
   S_node *right;
+  // nuevo arbol
+  int height;
 };
 
 class C_BinTree {
