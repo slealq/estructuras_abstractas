@@ -2,8 +2,6 @@
 #include<iostream>
 #include<string>
 #include<vector>
-//#include "cola2.h"
-//#include<stack>
 #include<queue>
 
 #ifndef CLASEARBOL
@@ -19,7 +17,7 @@ struct S_node{
   int height=0;
 };
 
-class C_BinTree {
+class C_AVLTree {
  protected:
   S_node *raiz;
  public:
@@ -52,14 +50,47 @@ class C_BinTree {
     printTree(this->raiz, nullptr, false);
   }
 
-  
-  
  private:
   
   S_node * insertAVL(S_node * node, int data){
-    
-  }
+    if(!node){
+      node = new S_node;
+      if(!node){
+	cout << "Memoria no asignada, se la comieron los gatitos " << endl;
+	return NULL;
+      }//if not node
+      else{
+	node->data = data;
+	node->height = 0;
+	node->left = node->right = NULL;
+      }//else
+    }// if not node
+      
+    else if(data < node->data){
+      node->left = insertAVL(node->left, data);
+      if((height(node->left) - height(node->right)) > 1){
+	cout << "left se cumple para: " << node->data << endl;
+	if(data < node->left-data)
+	  node=rotateLeft(node);
+	else
+	  node=doubleRotateLeft(node);
+      }//if height
+    }//else if
 
+    else if(data > node->data){
+      node->right = insertAVL(node->right, data);
+      if((height(node->right)-height(node->left)) > 1){
+	cout << "right se cumple para: " << node->data << endl;
+	if(data > node->right->data)
+	  node=rotateRight(node);
+	else
+	  node=doubleRotateRight(node);
+      }//if height
+    }//else if
+
+    node->height = max(height(node->left), height(node->right)) - 1;
+    return node;
+  }
 
   void printTree(S_node *root, Trunk *prev, bool isLeft)
   {
@@ -105,7 +136,6 @@ class C_BinTree {
 
   int height(S_node * nodo ){
     // tambien actualiza el height de todos los nodos 
-    
     if(nodo){
       int l_height = height(nodo->left);
       int r_height = height(nodo->right);
@@ -126,44 +156,25 @@ class C_BinTree {
     // ir nodo por nodo y aplicar height
     S_node * nodo = this->raiz;
     queue<S_node*> cola;
-     
-    //    cola.agregar(nodo);
     cola.push(nodo);
     while(cola.empty() == false){
-      //nodo = cola.quitar();
       nodo = cola.front();
       cola.pop();
       if(nodo==NULL){
-	//cout << "NULL" << endl;
 	continue;
       }
       nodo->height = height(nodo)-1;
-
-      //cout << nodo->dato << endl;
       if(nodo->left){
 	cola.push(nodo->left);
-	//cola.agregar(nodo->left);
       }//if
-      else{
-	//cola.push(NULL);
-	//cola.agregar(NULL);
-      }
       if(nodo->right){
 	cola.push(nodo->right);
-	//cola.agregar(nodo->right);
       }//if
-      else{
-	//cola.push(NULL);
-	//cola.agregar(NULL);
-      }
-      //delete nodo;
     }
    
   }
 
-
-    void preorder(S_node * nodo){
-    // DLR
+  void preorder(S_node * nodo){
     if(nodo){
       // aca nodo existe osea no es NULL
       cout << nodo->dato << endl;
