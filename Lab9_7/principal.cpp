@@ -19,6 +19,25 @@ void prueba3(void){
   arbol.printTree();
 
   cout << endl;
+  cout << "Prueba: Borrar hoja: 3" << endl;
+  arbol.deleteAVL(3);
+    
+  arbol.printTree();
+
+  cout << endl;
+  cout << "Ahora voy a introducir el 3 de nuevo" << endl;
+  arbol.insertAVL(3);
+
+  arbol.printTree();
+  cout << endl;
+
+  cout << "Ahora borro el nodo 6: 1 hijo" << endl;
+  arbol.deleteAVL(6);
+  
+  
+  arbol.printTree();
+  
+  cout << endl;
 }
 
 int main(void)
