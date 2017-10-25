@@ -506,7 +506,7 @@ class C_BinTree {
     update_height();
     return W;
   }//
-
+  
   S_node * rotate_left(S_node * X){
     S_node * W = X->left;
     X->left = W->right;
