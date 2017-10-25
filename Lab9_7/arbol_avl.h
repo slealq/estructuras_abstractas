@@ -62,10 +62,13 @@ class C_AVLTree {
   }
 
   void insertAVL(int data){
-    S_node * node = this->raiz;
-    insertAVL(node, data);
+    this->raiz = insertAVL(this->raiz, data);
   }
   
+  void deleteAVL(void){
+    this->raiz = deleteAVL(this->raiz, data);
+  }
+
  private:
   
   S_node * insertAVL(S_node * node, int data){
@@ -104,10 +107,43 @@ class C_AVLTree {
       }//if height
     }//else if
 
-    node->height = max(height(node->left), height(node->right)) - 1;
+    node->height = max(height(node->left), height(node->right));
     return node;
   }
 
+  S_node * deletetAVL(S_node * node, int data){
+    
+  }
+  
+  S_node * rotateRight(S_node * node){
+    S_node * paux = node->right;
+    node->right = paux->left;
+    paux->left = node;
+    node->height = max(height(node->left), height(node->right));
+    paux->height = max(height(paux->left), height(paux->right));
+    return paux;
+  }
+
+  S_node * doubleRotateRight(S_node * node){
+    node->right = rotateLeft(node->right);
+    return rotateRight(node);
+  }
+
+  S_node * rotateLeft(S_node * node){
+    S_node * paux = node->left;
+    node->left = paux->right;
+    paux->right = node;
+    node->height = max(height(node->left), height(node->right));
+    paux->height = max(height(paux->left), height(paux->right));
+    return paux;
+  }
+
+  S_node * doubleRotateLeft(S_node * node){
+    node->left = rotateRight(node->left);
+    return rotateLeft(node);
+  }
+
+  
   void printTree(S_node *root, Trunk *prev, bool isLeft)
   {
     if (root == nullptr)
@@ -151,7 +187,7 @@ class C_AVLTree {
     cout << p->str;
   }
   
-    int height(S_node * nodo ){
+  int height(S_node * nodo ){
     // tambien actualiza el height de todos los nodos 
     if(nodo){
       int l_height = height(nodo->left);
@@ -215,11 +251,6 @@ class C_AVLTree {
       cout << nodo->dato << endl;
     }
   }
-
-  
-  
 };
-
-
 
 #endif
