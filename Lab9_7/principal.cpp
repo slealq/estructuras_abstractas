@@ -11,7 +11,8 @@ void prueba3(void){
   arbol.insertAVL(15);
   arbol.insertAVL(3);
   arbol.insertAVL(19);
-
+  arbol.insertAVL(20);
+  
   cout << endl;
 
   cout << "Resultado: " << endl;
