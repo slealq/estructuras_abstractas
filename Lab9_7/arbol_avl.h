@@ -65,7 +65,7 @@ class C_AVLTree {
     this->raiz = insertAVL(this->raiz, data);
   }
   
-  void deleteAVL(void){
+  void deleteAVL(int data){
     this->raiz = deleteAVL(this->raiz, data);
   }
 
@@ -111,8 +111,44 @@ class C_AVLTree {
     return node;
   }
 
-  S_node * deletetAVL(S_node * node, int data){
+  S_node * deleteAVL(S_node * node, int data){
+    if(!node){
+      return NULL;
+    }
+
+    if(data < node->dato)
+      node->left = deleteAVL(node->left, data);
+    else if(data > node->dato)
+      node->right = deleteAVL(node->right, data);
+    else if(node->left && node->right)
+      {
+	// Tiene dos hijos
+	
+      }
+    else
+      {
+	// es hoja o tiene solo un hijo
+	S_node * paux;
+	paux = node->left ? node->left : node->right;
+		
+	if(paux == NULL){
+	  // ningun hijo
+	  paux = node;
+	  node = NULL;
+	}//if paux
+
+	else{
+	  // tiene un hijo
+	  *node = *paux;
+	}
+	delete paux;
+      }
     
+    if(!node)
+      return node;
+    
+    node->height = max(height(node->left), height(node->right));
+    return node;
   }
   
   S_node * rotateRight(S_node * node){
