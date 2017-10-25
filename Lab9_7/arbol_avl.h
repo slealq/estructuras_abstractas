@@ -17,14 +17,25 @@ struct S_node{
   int height=0;
 };
 
+struct Trunk{
+  Trunk *prev;
+  string str;
+  
+  Trunk(Trunk *prev, string str)
+  {
+    this->prev = prev;
+    this->str = str;
+  }
+};
+
 class C_AVLTree {
  protected:
   S_node *raiz;
  public:
-  C_BinTree(void){
+  C_AVLTree(void){
     this->raiz = NULL;
   }
-  ~C_BinTree(void){
+  ~C_AVLTree(void){
     // Destructor
     delete raiz;
   }
@@ -50,6 +61,11 @@ class C_AVLTree {
     printTree(this->raiz, nullptr, false);
   }
 
+  void insertAVL(int data){
+    S_node * node = this->raiz;
+    insertAVL(node, data);
+  }
+  
  private:
   
   S_node * insertAVL(S_node * node, int data){
@@ -60,28 +76,28 @@ class C_AVLTree {
 	return NULL;
       }//if not node
       else{
-	node->data = data;
+	node->dato = data;
 	node->height = 0;
 	node->left = node->right = NULL;
       }//else
     }// if not node
       
-    else if(data < node->data){
+    else if(data < node->dato){
       node->left = insertAVL(node->left, data);
       if((height(node->left) - height(node->right)) > 1){
-	cout << "left se cumple para: " << node->data << endl;
-	if(data < node->left-data)
+	cout << "left se cumple para: " << node->dato << endl;
+	if(data < node->left->dato)
 	  node=rotateLeft(node);
 	else
 	  node=doubleRotateLeft(node);
       }//if height
     }//else if
 
-    else if(data > node->data){
+    else if(data > node->dato){
       node->right = insertAVL(node->right, data);
       if((height(node->right)-height(node->left)) > 1){
-	cout << "right se cumple para: " << node->data << endl;
-	if(data > node->right->data)
+	cout << "right se cumple para: " << node->dato << endl;
+	if(data > node->right->dato)
 	  node=rotateRight(node);
 	else
 	  node=doubleRotateRight(node);
@@ -124,7 +140,8 @@ class C_AVLTree {
     
     printTree(root->right, trunk, false);
   }
-
+  
+  
   void showTrunks(Trunk *p){
     if (p == nullptr)
       return;
@@ -133,8 +150,8 @@ class C_AVLTree {
     
     cout << p->str;
   }
-
-  int height(S_node * nodo ){
+  
+    int height(S_node * nodo ){
     // tambien actualiza el height de todos los nodos 
     if(nodo){
       int l_height = height(nodo->left);
