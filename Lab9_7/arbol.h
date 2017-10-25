@@ -2,7 +2,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
-#include "cola2.h"
+//#include "cola2.h"
 //#include<stack>
 #include<queue>
 
@@ -16,7 +16,7 @@ struct S_node{
   S_node *left;
   S_node *right;
   // nuevo arbol
-  int height;
+  int height=0;
 };
 
 class C_BinTree {
@@ -30,12 +30,14 @@ class C_BinTree {
     // Destructor
     delete raiz;
   }
+
   void insertBST(int dato){
     // Cover para insertar un dato desde arriba
+    //    int * height = new int(0);
     insertBST(dato, this->raiz);
-
+    update_height();
     // actualizar height
-    height = height();
+    //height = height();
   }
   
   void insertBST(int dato, S_node * nodo){
@@ -45,9 +47,11 @@ class C_BinTree {
       temporal = nodo->dato;
       // Si el dato que se desea insertar es menor que el actual se incertara a la izquierda, caso contrario se hara a la derecha
       if(dato<=temporal){
+	//*height+=1;
 	if(nodo->left){
 	  // nodo->left tiene algo
 	  insertBST(dato, nodo->left);
+	  //*height-=1;
 	  return;
 	}// if nodo->left
 	else{
@@ -57,12 +61,17 @@ class C_BinTree {
 	  aux->dato = dato;
 	  aux->right = NULL;
 	  aux->left = NULL;
+
+	  // Agregar la altura
+	  //aux->height = *height;
 	  nodo->left = aux;
 	  return;
 	}//else
+	//*height-=1;
       }//if temporal <= dato
       
       if(dato>temporal){
+	//*height+=1;
 	if(nodo->right){
 	  // nodo->right tiene algo
 	  insertBST(dato, nodo->right);
@@ -75,9 +84,13 @@ class C_BinTree {
 	  aux->dato = dato;
 	  aux->right = NULL;
 	  aux->left = NULL;
+
+	  // Agregar la altura 
+	  //aux->height = *height;
 	  nodo->right = aux;
 	  return;
 	}//else
+	//*height-=1;
 	// si el nodo en el que se quiere insertar existe, se itera sobre este como en el punto 2
 	
       }//if temporal->dato
@@ -90,6 +103,7 @@ class C_BinTree {
       aux->dato = dato;
       aux->right = NULL;
       aux->left = NULL;
+      //aux->height = *height;
       this->raiz = aux;
       return;
     }
@@ -129,10 +143,52 @@ class C_BinTree {
       cout << nodo->dato << endl;
     }
   }
+
+  void update_height(void){
+    // ir nodo por nodo y aplicar height
+    S_node * nodo = this->raiz;
+    queue<S_node*> cola;
+     
+    //    cola.agregar(nodo);
+    cola.push(nodo);
+    while(cola.empty() == false){
+      //nodo = cola.quitar();
+      nodo = cola.front();
+      cola.pop();
+      if(nodo==NULL){
+	//cout << "NULL" << endl;
+	continue;
+      }
+      nodo->height = height(nodo)-1;
+
+      //cout << nodo->dato << endl;
+      if(nodo->left){
+	cola.push(nodo->left);
+	//cola.agregar(nodo->left);
+      }//if
+      else{
+	//cola.push(NULL);
+	//cola.agregar(NULL);
+      }
+      if(nodo->right){
+	cola.push(nodo->right);
+	//cola.agregar(nodo->right);
+      }//if
+      else{
+	//cola.push(NULL);
+	//cola.agregar(NULL);
+      }
+      //delete nodo;
+    }
+   
+  }
+
   int height(void){
     return height(this->raiz);
   }
   int height(S_node * nodo ){
+    // tambien actualiza el height de todos los nodos 
+    
     if(nodo){
       int l_height = height(nodo->left);
       int r_height = height(nodo->right);
@@ -153,9 +209,9 @@ class C_BinTree {
     // Funcion dummy para iniciar recursion
     //    cout << "Aqui" << endl;
     delete_tree(dato, this->raiz);
-
+    update_height();
     // actualizar la altura
-    height = height();
+    //height = height();
   }
   
   bool delete_tree(int dato, S_node * nodo){
@@ -325,10 +381,13 @@ class C_BinTree {
     aux->left = NULL;
     aux->right = NULL;
 
+    //    int * height = new int(0);
+    // variable height para la altura
+    
     insertComplete(aux, this->raiz);
-
+    update_height();
     // actualizar height
-    height = height();
+    //height = height();
 
   }// insertComplete
 
@@ -353,11 +412,13 @@ class C_BinTree {
       }
       //cout << nodo->dato << endl;
       if(!nodo->left){
+	nodo_nuevo->height = (nodo->height) + 1;
 	nodo->left = nodo_nuevo;
 	return true;
       }
 
       if(!nodo->right){
+	nodo_nuevo->height = nodo->height + 1;
 	nodo->right = nodo_nuevo;
 	return true;
       }
@@ -367,6 +428,7 @@ class C_BinTree {
 	//cola.agregar(nodo->left);
       }//if
       else{
+	nodo_nuevo->height = nodo->height + 1;
 	nodo->left = nodo_nuevo;
 	return true;
       }
@@ -375,6 +437,7 @@ class C_BinTree {
 
       }//if
       else{
+	nodo_nuevo->height = nodo->height + 1;
 	nodo->right = nodo_nuevo;
 	return true;
 	//cola.agregar(NULL);
@@ -435,6 +498,45 @@ class C_BinTree {
     }
 
   }// printBranches
+
+  S_node * rotate_right(S_node * W){
+    S_node * X = W->right;
+    W->right = X -> left;
+    X->left = W;
+    update_height();
+    return W;
+  }//
+
+  S_node * rotate_left(S_node * X){
+    S_node * W = X->left;
+    X->left = W->right;
+    W->right = X;
+    update_height();
+    return W;
+  }
+
+  S_node * double_rotate_with_left(S_node * Z){
+    Z->left = rotate_right(Z->left);
+    update_height();
+    return rotate_left(Z);
+    
+  }
+
+  S_node * double_rotate_with_right(S_node * Z){
+    Z->right = rotate_left(Z->right);
+    update_height();
+    return rotate_right(Z);
+
+  }// rotate with right
+
+  S_node * insertAVL(int dato){
+    insertAVL(nodo, int dato);
+    update_height();
+  }
+
+  S_node * insertAVL(
+
+  
   
 };
 
