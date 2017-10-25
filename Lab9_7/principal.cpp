@@ -1,7 +1,33 @@
 #include "arbol.h"
 
-int main(void)
-{
+
+void prueba2(void){
+  C_BinTree arbol;
+
+  cout << endl;
+
+  cout << "Insertando la secuencia: 8, 6, 15, 3, 19, 20" << endl;
+  arbol.insertBST(8);
+  arbol.insertBST(6);
+  arbol.insertBST(15);
+  arbol.insertBST(3);
+  arbol.insertBST(19);
+
+  cout << endl;
+
+  cout << "Resultado" << endl;
+  arbol.printTree();
+
+  cout << endl;
+  cout << "Rotacion izq en root" << endl;
+
+  //cout << arbol->raiz->height << endl;
+
+  cout << endl;
+}
+
+
+void prueba1(void){
   C_BinTree arbol;
   cout << endl;
   cout << "Insertando la secuencia 100, 80, 75, 85, 190, 60" << endl; 
@@ -71,4 +97,10 @@ int main(void)
   cout << "Arbol actual " << endl;
   cout << endl;
   arbol.printTree();
+}
+
+int main(void)
+{
+  prueba2();
+
 }
