@@ -123,6 +123,15 @@ class C_AVLTree {
     else if(node->left && node->right)
       {
 	// Tiene dos hijos
+	// PASO 1: Encontrar max de la rama izq
+	S_node * max = node->left;
+	while(max->right)
+	  max = max->right;
+	// PASO 2: Copiar el dato
+	node->dato = max->dato;
+
+	// PASO 3: Recursivo borrar ese nodo
+	node->left = deleteAVL(node->left, max->dato);
 	
       }
     else
@@ -146,6 +155,26 @@ class C_AVLTree {
     
     if(!node)
       return node;
+
+    // Balancear
+    if((height(node->left)-height(node->right)) > 1)
+      {
+	cout << "left se cumple para: "<< node->dato << endl;
+	if(node->dato > node->left->dato)
+	  node = rotateLeft(node);
+	else
+	  node = doubleRotateLeft(node);
+      }
+    
+    if((height(node->right)-height(node->left)) > 1)
+      {
+	cout << "right se cumple para: "<< node->dato << endl;
+	if(node->dato < node->right->dato)
+	  node = rotateRight(node);
+	else
+	  node = doubleRotateRight(node);
+      }
+
     
     node->height = max(height(node->left), height(node->right));
     return node;
