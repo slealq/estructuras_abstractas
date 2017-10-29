@@ -1,6 +1,6 @@
 #include "../Lab4/pila.h"
 #include "../Lab4/base.h"
-
+#include "../Lab7/arbol_avl.h"
 
 void agregar_en_cola(C_base<int> * puntero1, C_base<int> * puntero2, int dato){
 
@@ -34,7 +34,7 @@ void probar_cola(void){
   puntero1 = &pila1;
   puntero2 = &pila2;
 
-  cout << "Agregar secuencia 0,1,2....10" << endl;
+  cout << "Agregar secuencia 1,2....10" << endl;
   for(int i=1; i<=10; i++){
     agregar_en_cola(puntero1, puntero2, i);
   }//for
@@ -45,7 +45,25 @@ void probar_cola(void){
   
 }
 
+void probar_arbol(void){
+  // Funcion para probar el devolver el mas cercano
+  C_AVLTree arbolito;
+
+  for(int i=2; i<=120; i++){
+    arbolito.insertAVL(i);
+  }
+
+  cout << "El arbolito se ve asi" << endl;
+
+  arbolito.printTree();
+
+  cout << " Devolver el más cercano de 40" << endl;
+  cout << arbolito.devolver_cercano(40) << endl;
+  
+}
+
 int main(void) {
   probar_cola();
+  probar_arbol();
   
 };
