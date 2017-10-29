@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include<queue>
+#include<stdlib.h>
 
 #ifndef CLASEARBOL
 #define CLASEARBOL
@@ -69,8 +70,44 @@ class C_AVLTree {
     this->raiz = deleteAVL(this->raiz, data);
   }
 
- private:
+  int devolver_cercano(int dato){
+    int temp = dato;
+    int diff = 0;
+    S_node * nodo = this->raiz;
+    // agregar diff
+    diff = abs(dato-nodo->dato);
+
+    queue<S_node*> cola;
+    cola.push(nodo);
+    while(cola.empty() == false){
+      nodo = cola.front();
+      cola.pop();
+      if(nodo==NULL){
+	continue;
+      }
+
+      if(abs(dato-nodo->dato) < diff){
+	// la diferencia entre temp y el nuevo dato es menor
+	diff = abs(dato-nodo->dato);
+	temp = nodo->dato;
+      }
+
+      if(diff==1){
+	return temp;
+      }
+      
+      if(nodo->left){
+	cola.push(nodo->left);
+      }//if
+      if(nodo->right){
+	cola.push(nodo->right);
+      }//if
+    }
+    return temp;
+  }
   
+ private:
+
   S_node * insertAVL(S_node * node, int data){
     if(!node){
       node = new S_node;
