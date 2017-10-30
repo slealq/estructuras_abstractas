@@ -42,6 +42,10 @@ class C_Heap {
   }
 
   int percolate_down(int ipos){
+    if(leftChild(ipos)==-1||rightChild(ipos)==-1){
+      return 0;
+    }
+
     if(htype == 0){
       // max heap type
       int mayor = ipos; // se supone el nodo como el mayor
@@ -70,11 +74,15 @@ class C_Heap {
       int menor = ipos; // se supone el nodo como el menor
       if(heap[leftChild(ipos)] < heap[menor]){
 	// si el hijo izquierdo es mayor
-	menor = leftChild(ipos);
+	if(heap[leftChild(ipos)]!=-1){
+	  menor = leftChild(ipos);
+	}
       }//if left child
       
       if(heap[rightChild(ipos)] < heap[menor]){
-	menor = rightChild(ipos);
+	if(heap[rightChild(ipos)]!=-1){
+	  menor = rightChild(ipos);
+	}
       }// if right child
       
       if(menor == ipos){
@@ -111,25 +119,43 @@ class C_Heap {
     
   }
 
+  void print_heap(void){
+    cout << "\nHeap: " << endl;
+    for(int i=0; i<heap.size(); i++){
+      cout << heap[i];
+      cout << " " ;
+    }//for
+    cout << endl;
+    cout << endl;
+  }
+
   void delMax(void){
     heap[0] = heap[heap.size()-1];
+    heap[heap.size()-1] = -1;
     percolate_down(0);
   }
 
   void insert(int dato){
     int pos = 0;
+    bool espacio = false;
     for(int i=0; i<heap.size(); i++){
       //buscar el primer espacio vacio
       if(heap[i] == -1){
 	pos = i;
+	espacio = true;
+	break;
       }//if
-      break;
     }//for
 
+    if(!espacio){
+      cout << "No hay espacio para insertar" << endl;
+      return;
+    }
+    
     heap[pos] = dato;
 
     // heapyfing
-    for(int i = count()/2 -1; i>=0; i++){
+    for(int i = count()/2 -1; i>=0; i--){
       percolate_down(i);
     }
     
@@ -143,7 +169,17 @@ class C_Heap {
   void resize(int isize){
     // hay dos casos
     // esta el caso donde es reducir
+    int contador;
+    contador = capacity();
     
+    heap.resize(isize);
+
+    if(isize > contador){
+      // es una expansion, entonces tengo que agregar ceros
+      for(int i = contador; i<isize; i++){
+	heap[i] = -1;
+      }
+    }
     
     // y aumentar 
   }
