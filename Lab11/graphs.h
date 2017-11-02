@@ -18,6 +18,7 @@ class C_Graph{
   C_Graph(int vertice);
   virtual ~C_Graph(void);
   virtual void edge(int vertice1, int vertice2);
+  virtual void edge(int vertice1, int vertice2, int peso);
   virtual void pprint(void);
   virtual void pprint(vector<vector<int>>);
   virtual void dfs(int node);
@@ -50,6 +51,12 @@ template <typename T>
 void C_Graph<T>::edge(int vertice1, int vertice2)
 {
   adyacencia[vertice1][vertice2] = 1;
+}
+
+template <typename T>
+void C_Graph<T>::edge(int vertice1, int vertice2, int peso)
+{
+  adyacencia[vertice1][vertice2] = peso;
 }
 
 template <typename T>
