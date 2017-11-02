@@ -31,7 +31,11 @@ void prueba(void){
   cout << "Probando el metodo dfs en 3" << endl;
   grafo.dfs(3);
 
+  cout << "Probando el metodo de enlace con peso en 0->4" << endl;
+  grafo.edge(0,4,10);
 
+  grafo.pprint();
+  
   
   cout << endl;
 }
