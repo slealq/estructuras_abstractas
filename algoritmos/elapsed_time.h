@@ -8,17 +8,15 @@ using namespace std::chrono;
 
 class E_time{
  protected:
-  time_t start_value;
-  time_t stop_value;
-  milliseconds ms1;
-  milliseconds ms2;
+  microseconds ms1;
+  microseconds ms2;
     
  public:
   E_time(void);
   virtual ~E_time(void);
   virtual void start(void);
   virtual void stop(void);
-  virtual milliseconds elapsed(void);
+  virtual microseconds elapsed(void);
 };
 
 // IMPLEMENTACION
@@ -34,19 +32,19 @@ E_time::~E_time(void)
 
 void E_time::start(void)
 {
-  ms1 = duration_cast< milliseconds >(
+  ms1 = duration_cast< microseconds >(
     system_clock::now().time_since_epoch()
 );
 }
 
 void E_time::stop(void)
 {
-  ms2 = duration_cast< milliseconds >(
+  ms2 = duration_cast< microseconds >(
     system_clock::now().time_since_epoch()
 );
 }
 
-milliseconds E_time::elapsed(void)
+microseconds E_time::elapsed(void)
 {
   return ms2 - ms1;
 }
