@@ -253,6 +253,39 @@ void radix_sort(vector<int> &array, int base=10)
     }// while
 }//radix sort
 
+int partition(vector<int> &array, int low, int high)
+{
+  int pivot = array[high];
+  int i = (low - 1);
+  int temp;
+  
+  for(int j=low; j<high; j++)
+    {
+      if(array[j] <= pivot)
+	{
+	  i++;
+	  temp = array[i];
+	  array[i] = array[j];
+	  array[j] = temp;
+	}//if
+    }//for
+  temp = array[i+1];
+  array[i+1] = array[high];
+  array[high] = temp;
+  return (i+1);
+  
+}//partition
+
+void quick_sort(vector<int> &array, int low, int high)
+{
+  if(low<high)
+    {
+      int pi = partition(array, low, high);
+      quick_sort(array, low, pi-1);
+      quick_sort(array, pi+1, high);
+    }//if
+}//quick sort
+
 vector<int> probar_algoritmo(vector<int> &array, int selection)
 {
   // 0 = Bubble sort
@@ -283,6 +316,10 @@ vector<int> probar_algoritmo(vector<int> &array, int selection)
       break;
     case 4:
       radix_sort(respuesta);
+      break;
+    case 5:
+      int n = array.size();
+      quick_sort(respuesta, 0, n-1);
       break;
     }
   
@@ -374,6 +411,14 @@ int main(void)
   response = probar_algoritmo(array, 4);
   comparar(array, response);
 
+    // Enter
+  cout << endl;
+  
+  // prueba del quick
+  cout << "QUICK SORT" << endl;
+  response = probar_algoritmo(array, 5);
+  comparar(array, response);
+
   
   // pruebas de tiempo ========================================
   cout << endl << " \t \t Pruebas de tiempo con 10k números: " << endl << endl;
@@ -415,6 +460,14 @@ int main(void)
   // prueba del radix
   cout << "RADIX SORT" << endl;
   response = probar_algoritmo(array, 4);
+  //comparar(array, response);
+
+    // Enter
+  cout << endl;
+  
+  // prueba del radix
+  cout << "QUICK SORT" << endl;
+  response = probar_algoritmo(array, 5);
   //comparar(array, response);
   
   // Enter
