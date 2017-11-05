@@ -3,8 +3,98 @@
 #include <time.h>
 #include <stdlib.h>
 #include "elapsed_time.h"
+#include "heap.h"
 
 using namespace std;
+
+// METODOS PARA EL HEAP SORT
+
+int leftChild(int i, int n){
+  //devuelve la pos del left child                                            
+  int resultado = 2*i+1;
+  if(resultado<n){
+    return resultado;
+    
+  }
+  
+  else{
+    return -1;
+  }
+  
+}
+
+int rightChild(int i, int n){
+  //devuleve la pos del right child                                           
+  int resultado = 2*i+2;
+    if(resultado<n){
+      return resultado;
+    }
+    
+    else{
+      return -1;
+    }
+}
+
+int percolate_down(int ipos, vector<int> &heap, int n, int htype=0){
+  if(leftChild(ipos, n)==-1||rightChild(ipos, n)==-1){
+    //return 0;
+  }
+  
+  if(htype == 0){
+    // max heap type                                             
+    int mayor = ipos; // se supone el nodo como el mayor          
+    if(heap[leftChild(ipos, n)] > heap[mayor]){
+      // si el hijo izquierdo es mayor                           
+      mayor = leftChild(ipos, n);
+    }//if left child                                            
+    if(heap[rightChild(ipos, n)] > heap[mayor]){
+      mayor = rightChild(ipos, n);
+    }// if right child                                          
+    if(mayor == ipos){
+      // no hice nada entonces me devuelvo                       
+      return 0;
+    }
+    else{
+      int temp = heap[ipos];
+      heap[ipos] = heap[mayor];
+      heap[mayor] = temp;
+      percolate_down(mayor, heap, n);
+    }//else                                        
+  }// htype == 0                                                
+  if(htype == 1){
+    int menor = ipos; // se supone el nodo como el menor        
+    if(heap[leftChild(ipos, n)] < heap[menor]){
+        // si el hijo izquierdo es mayor                         
+      if(heap[leftChild(ipos, n)]!=-1){
+	menor = leftChild(ipos, n);
+        }
+      }//if left child                                           
+      
+    if(heap[rightChild(ipos, n)] < heap[menor]){
+      if(heap[rightChild(ipos, n)]!=-1){
+	menor = rightChild(ipos, n);
+        }
+      }// if right child                                     
+      
+      if(menor == ipos){
+        // no hice nada entonces me devuelvo                     
+        return 0;
+      }
+      else{
+        int temp = heap[ipos];
+        heap[ipos] = heap[menor];
+        heap[menor] = temp;
+        percolate_down(menor, heap, n);
+      }//else
+  }// htype == 1                                        
+}
+
+void heapify(vector<int> &heap,int n)
+{
+  for(int i = n/2 -1; i>=0; i--){
+    percolate_down(i, heap, n);
+  }
+}
 
 void copiar(vector<int> &original, vector<int> &copia)
 {
@@ -90,6 +180,23 @@ void counting_sort(vector<int> &array)
   
 }//couting sort
 
+void heap_sort(vector<int> &heap)
+{
+  int temp;
+  int n = heap.size();
+  heapify(heap, n);
+  int end = n-1;
+  while(end>0)
+    {
+      temp = heap[0];
+      heap[0] = heap[end];
+      heap[end] = temp;
+      end -=1;
+      n-=1;
+      percolate_down(0, heap, n);
+    }//while
+}//heap sort
+
 vector<int> probar_algoritmo(vector<int> &array, int selection)
 {
   // 0 = Bubble sort
@@ -114,6 +221,9 @@ vector<int> probar_algoritmo(vector<int> &array, int selection)
       break;
     case 2:
       counting_sort(respuesta);
+      break;
+    case 3:
+      heap_sort(respuesta);
       break;
     }
   
@@ -189,6 +299,14 @@ int main(void)
   response = probar_algoritmo(array, 2);
   comparar(array, response);
 
+    // Enter
+  cout << endl;
+  
+  // prueba del heap
+  cout << "HEAP SORT" << endl;
+  response = probar_algoritmo(array, 3);
+  comparar(array, response);
+
   
   // pruebas de tiempo ========================================
   cout << endl << " \t \t Pruebas de tiempo con 10k números: " << endl << endl;
@@ -216,6 +334,14 @@ int main(void)
   response = probar_algoritmo(array, 2);
   //comparar(array, response);
 
+    // Enter
+  cout << endl;
+  
+  // prueba del heap
+  cout << "HEAP SORT" << endl;
+  response = probar_algoritmo(array, 3);
+  //comparar(array, response);
+  
   // Enter
   cout << endl;
 };
