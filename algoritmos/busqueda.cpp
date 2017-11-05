@@ -2,8 +2,8 @@
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
+#include <math.h>
 #include "elapsed_time.h"
-#include "heap.h"
 
 using namespace std;
 
@@ -197,6 +197,62 @@ void heap_sort(vector<int> &heap)
     }//while
 }//heap sort
 
+// método de ayuda para el radix.
+void list_to_buckets(vector<vector<int>> &bucket, vector<int> &array, int iteration, int base=10)
+{
+  //vector<vector<int>> bucket;
+  bucket.resize(base);
+  for(int i=0; i<array.size(); i++)
+    {
+      int number = array[i];
+      //cout << "NUMBER: " << number << endl;
+      int digit = (int)floor(number / pow(base, iteration)) % base;
+      //cout << "DIGIT: " << digit << endl;
+      // Drop the number to the correct bucket
+      bucket[digit].push_back(number);
+    }//for
+}// list to buckets
+
+void bucket_to_list(vector<vector<int>> &bucket, vector<int> &array)
+{
+  vector<int> respuesta;
+  for(int i=0; i<bucket.size(); i++)
+    {
+      for(int j=0; j<bucket[i].size(); j++)
+	{
+	  //cout << "\t\t BUCKET i: " << i << " j : " << j << " valor: " << bucket[i][j] << endl;
+	  respuesta.push_back(bucket[i][j]);
+	}//for 
+    }//for
+
+  copiar(respuesta, array);
+
+  // limpiar el bucket
+  bucket.clear();
+  
+}//bucket to list
+
+void radix_sort(vector<int> &array, int base=10)
+{
+  //Encontrar el valor más grande
+  vector<vector<int>> bucket;
+  int maxval;
+  maxval = array[0];
+  for(int i=0; i<array.size(); i++){
+    if(array[i] > maxval){
+      maxval = array[i];
+    }// if
+  }// for
+
+  int it = 0;
+  while(pow(base, it) < maxval)
+    {
+      list_to_buckets(bucket, array, it);
+      bucket_to_list(bucket, array);
+      it+=1;
+    }// while
+}//radix sort
+
 vector<int> probar_algoritmo(vector<int> &array, int selection)
 {
   // 0 = Bubble sort
@@ -224,6 +280,9 @@ vector<int> probar_algoritmo(vector<int> &array, int selection)
       break;
     case 3:
       heap_sort(respuesta);
+      break;
+    case 4:
+      radix_sort(respuesta);
       break;
     }
   
@@ -307,6 +366,14 @@ int main(void)
   response = probar_algoritmo(array, 3);
   comparar(array, response);
 
+  // Enter
+  cout << endl;
+  
+  // prueba del radix
+  cout << "RADIX SORT" << endl;
+  response = probar_algoritmo(array, 4);
+  comparar(array, response);
+
   
   // pruebas de tiempo ========================================
   cout << endl << " \t \t Pruebas de tiempo con 10k números: " << endl << endl;
@@ -334,12 +401,20 @@ int main(void)
   response = probar_algoritmo(array, 2);
   //comparar(array, response);
 
-    // Enter
+  // Enter
   cout << endl;
   
   // prueba del heap
   cout << "HEAP SORT" << endl;
   response = probar_algoritmo(array, 3);
+  //comparar(array, response);
+
+  // Enter
+  cout << endl;
+  
+  // prueba del radix
+  cout << "RADIX SORT" << endl;
+  response = probar_algoritmo(array, 4);
   //comparar(array, response);
   
   // Enter
