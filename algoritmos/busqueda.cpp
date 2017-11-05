@@ -287,7 +287,7 @@ vector<int> probar_algoritmo(vector<int> &array, int selection)
     }
   
   tiempo.stop();
-  cout << "Duración en ms: " ;
+  cout << "Duración en us: " ;
   cout << tiempo.elapsed().count() << endl;
 
   return respuesta;
