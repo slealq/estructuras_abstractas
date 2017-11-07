@@ -1,19 +1,22 @@
 #include <time.h>
+#include <chrono>
 
 #ifndef CLASEELAPSEDTIME
 #define CLASEELAPSEDTIME
 
+using namespace std::chrono;
+
 class E_time{
  protected:
-  time_t start_value;
-  time_t stop_value;
-
+  microseconds ms1;
+  microseconds ms2;
+    
  public:
   E_time(void);
   virtual ~E_time(void);
   virtual void start(void);
   virtual void stop(void);
-  virtual time_t elapsed(void);
+  virtual microseconds elapsed(void);
 };
 
 // IMPLEMENTACION
@@ -29,17 +32,21 @@ E_time::~E_time(void)
 
 void E_time::start(void)
 {
-  start_value = time(0);
+  ms1 = duration_cast< microseconds >(
+    system_clock::now().time_since_epoch()
+);
 }
 
 void E_time::stop(void)
 {
-  stop_value = time(0);
+  ms2 = duration_cast< microseconds >(
+    system_clock::now().time_since_epoch()
+);
 }
 
-time_t E_time::elapsed(void)
+microseconds E_time::elapsed(void)
 {
-  return start_value - stop_value;
+  return ms2 - ms1;
 }
 
 #endif
