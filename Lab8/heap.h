@@ -42,10 +42,6 @@ class C_Heap {
   }
 
   int percolate_down(int ipos){
-    if(leftChild(ipos)==-1||rightChild(ipos)==-1){
-      return 0;
-    }
-
     if(htype == 0){
       // max heap type
       int mayor = ipos; // se supone el nodo como el mayor
@@ -71,6 +67,9 @@ class C_Heap {
     }// htype == 0
 
     if(htype == 1){
+      if(leftChild(ipos)==-1||rightChild(ipos)==-1){
+	return 0;
+      }
       int menor = ipos; // se supone el nodo como el menor
       if(heap[leftChild(ipos)] < heap[menor]){
 	// si el hijo izquierdo es mayor

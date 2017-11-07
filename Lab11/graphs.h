@@ -1,6 +1,9 @@
 #include<vector>
-#include<queue>
+//#include<queue>
 #include<iostream>
+#include<utility>
+#include<functional>
+#include<bits/stdc++.h>
 
 using namespace std;
 
@@ -68,7 +71,7 @@ template <typename T>
 void C_Graph<T>::pprint(vector<vector<int>> adyacencia){
   cout << "Matrix: " << endl;
   for(int i=0; i<adyacencia.size(); i++){
-    for(int j=0; j<adyacencia.size(); j++){
+    for(int j=0; j<adyacencia[i].size(); j++){
       cout << " " << adyacencia[i][j];
     }//for j
     cout << endl;
@@ -155,20 +158,118 @@ vector<vector<int>> C_Graph<T>::weightless_distance(int node)
 {
   vector<vector<int>> respuesta;
   // Redimensionar para tener tres columnas 
-  respuesta.resize(3);
-  for(int i=0; i<3; i++)
+  respuesta.resize(size);
+  for(int i=0; i<size; i++)
     {
-      respuesta[i].resize(size);
+      respuesta[i].resize(2);
+      respuesta[i][0] = -1;
     }
 
+  // Limpiar el inicial
+  respuesta[node][0] = 0;
+
   // Ya a este punto tengo la matriz
+  pprint(respuesta);
+
+  // defino una nueva cola
+  queue<int> cola;
+  cola.push(node);
+
+  int nodo;
+
+  while(cola.empty() == false){
+    nodo = cola.front();
+    cola.pop();
+    for(int i = 0; i<size; i++){
+      if(adyacencia[nodo][i] != 0){
+	// adjacent to v
+	if(respuesta[i][0] == -1){
+	  respuesta[i][0] = respuesta[nodo][0] + 1;
+	  respuesta[i][1] = nodo;
+	  cola.push(i);
+	}
+      }
+    }
+    
+  }
   
+  // volver a imprimir el resultado
+  pprint(respuesta);
+
+  
+  return respuesta;
 }
 
 template <typename T>
 vector<vector<int>> C_Graph<T>::weighted_distance(int node)
 {
+  vector<vector<int>> respuesta;
+  // Redimensionar para tener tres columnas
+  respuesta.resize(size);
+  for(int i=0; i<size; i++)
+    {
+      respuesta[i].resize(2);
+      respuesta[i][0] = -1;
+    }
+
+  // Limpiar el inicial
+  respuesta[node][0] = 0;
+
+  // A este punto tengo la matriz
+  pprint(respuesta);
   
+  // defino la cola
+  priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> cola;
+
+  // Definir el primer elemento
+  pair<int, int> p;
+  p = make_pair(node, 0);
+
+  cola.push(p);
+
+  // Variables de ayuda
+  pair<int, int> pair;
+  int nodo;
+  int peso;
+  int distancia;
+  
+  while(cola.empty() == false)
+    {
+      pair = cola.top();
+      nodo = pair.first;
+      cola.pop();
+      for(int i=0; i<size; i++)
+	{
+	  // OJO: v = nodo
+	  // n = i
+	  // respuesta[x][0] = distancia[x]
+	  // respuesta[x][1] = path
+	  
+	  if(adyacencia[nodo][i] !=0 )
+	    {
+	      distancia = respuesta[nodo][0] + adyacencia[nodo][i];
+	      if(respuesta[i][0] == -1)
+		{
+		  respuesta[i][0] = distancia;
+		  pair = make_pair(i, respuesta[i][0]);
+		  cola.push(pair);
+		  respuesta[i][1] = nodo;
+		}//if
+	      if(respuesta[i][0] > distancia)
+		{
+		  respuesta[i][0] = distancia;
+		  pair = make_pair(i, respuesta[i][0]);
+		  cola.push(pair);
+		  respuesta[i][1] = nodo;
+		}//if
+	    }//if
+	}//for
+    }//while
+
+  // volver a imrpimir el resultado
+  pprint(respuesta);
+    
+  return respuesta;
 }
 
 #endif

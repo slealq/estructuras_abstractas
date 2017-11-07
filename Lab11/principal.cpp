@@ -31,12 +31,28 @@ void prueba(void){
   cout << "Probando el metodo dfs en 3" << endl;
   grafo.dfs(3);
 
-  cout << "Probando el metodo de enlace con peso en 0->4" << endl;
-  grafo.edge(0,4,10);
+  //cout << "Probando el metodo de enlace con peso en 0->4" << endl;
+  //grafo.edge(0,4,10);
 
   grafo.pprint();
+
+  cout << "Weightless distance : " << endl;
+  grafo.weightless_distance(0);
   
-  
+  // PRUEBA DE WEIGHTED GRAPH
+  grafo.edge(0, 1, 3);
+  grafo.edge(0, 3, 5);
+  grafo.edge(0, 7, 8);
+  grafo.edge(7, 8, 1);
+  grafo.edge(8, 9, 2);
+  grafo.edge(3, 9, 3);
+  grafo.edge(1, 3, 1);
+  grafo.edge(0, 8, 4);
+  grafo.pprint();
+
+  cout << "Weighted distance: " << endl;
+  grafo.weighted_distance(0);
+    
   cout << endl;
 }
 
