@@ -3,6 +3,7 @@
 #include <iostream> // for print dbg
 #include "bloom_filter.h"
 #include "smhasher/src/MurmurHash3.h"
+#include "smhasher/src/Spooky.h"
 
 bloom_filter::bloom_filter(int m_bits, int k_hashes) {
   filter_bits_.resize(m_bits, false);
@@ -11,7 +12,7 @@ bloom_filter::bloom_filter(int m_bits, int k_hashes) {
   n_elements_ = 0;
 }//bloom_filter constructor
 
-//helper 164 bit hashing function with murmurhash3
+//helper 128 bit hashing function with murmurhash3 NOT USED
 std::array<uint64_t, 2> hash(const int * data,
 			     std::size_t length=2) {
   // array of unsigned ints of 64 bits is the output
@@ -21,6 +22,23 @@ std::array<uint64_t, 2> hash(const int * data,
   return hash_value;
 
 }// hash
+
+// Spooky 128 hash taken from SpookyTest.cpp
+void SpookyHash128_test(const void *key, int len, uint32_t seed, void *out) {
+  uint64_t h1 = seed, h2 = seed;
+  SpookyHash::Hash128(key, len, &h1, &h2);
+  ((uint64_t*)out)[0] = h1;
+  ((uint64_t*)out)[1] = h2;
+}
+
+// helper 64 bit hashing with spooky hash
+std::array<uint64_t, 2> spooky_hash(const int * data,
+				    std::size_t length=4) {
+  std::array<uint64_t, 2> hash_value;
+  SpookyHash128_test(data, length, 24, hash_value.data());
+
+  return hash_value;
+}// spooky hash				   
 
 //helper double hashing function for 0 to k different hashes
 uint64_t ith_hash(uint8_t i,
@@ -36,10 +54,10 @@ uint64_t ith_hash(uint8_t i,
 
 } // double hashing
 
-void bloom_filter::add(int * data, std::size_t length=2) {
+void bloom_filter::add(int * data, std::size_t length=4) {
   // auto for automatic type 
-  auto hash_values = hash(data, length);
-
+  auto hash_values = spooky_hash(data, length);
+  
   for( int i = 0; i < k_hashes_; i++) {
     // until all k_hahes_ positions are filled
     filter_bits_[ith_hash(i,
@@ -54,9 +72,9 @@ void bloom_filter::add(int * data, std::size_t length=2) {
 }//add function
 
 bool bloom_filter::possibly_contained(int * data,
-				      std::size_t length) {
+				      std::size_t length=4) {
   // auto for automatic type
-  auto hash_values = hash(data, length);
+  auto hash_values = spooky_hash(data, length);
 
   for( int i = 0; i < k_hashes_; i++) {
     // check that all bits from the hashes are true
@@ -84,8 +102,8 @@ float bloom_filter::error_rate(void) {
 std::vector<int> bloom_filter::double_hash_dbg(int * data,
 					       std::size_t length) {
   // auto for automatic type
-  auto hash_values = hash(data, length);
-
+  auto hash_values = spooky_hash(data, length);
+  
   std::vector<int> hashes_result(k_hashes_);
   
   for( int i = 0; i < k_hashes_; i++) {

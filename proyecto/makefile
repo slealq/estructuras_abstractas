@@ -1,4 +1,4 @@
-OBJS = bloom_filter_test.cpp bloom_filter.o MurmurHash3.o
+OBJS = bloom_filter_test.cpp bloom_filter.o MurmurHash3.o Spooky.o
 CC = g++
 DEBUG = -g
 CFLAGS = -c $(DEBUG)
@@ -13,6 +13,9 @@ bloom_filter.o : bloom_filter.h
 
 MurmurHash3.o : smhasher/src/MurmurHash3.h
 	$(CC) $(CFLAGS) smhasher/src/MurmurHash3.cpp
+
+Spooky.o : smhasher/src/Spooky.h
+	$(CC) $(CFLAGS) smhasher/src/Spooky.cpp
 
 clean-utils:
 	@printf "Removing *~ *# files ... \n"
