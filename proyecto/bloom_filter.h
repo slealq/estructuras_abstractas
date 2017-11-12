@@ -10,13 +10,13 @@ class bloom_filter {
   // p: error rate
 
  public:
-  bloom_filter(int size, int k_hashes);
-  void add(int * data, std::size_t length);
-  bool possibly_contained(int * data, std::size_t length);
+  bloom_filter(uint64_t size, uint8_t k_hashes);
+  void add(uint8_t * data, std::size_t length);
+  bool possibly_contained(uint8_t * data, std::size_t length);
  private:
   std::vector<bool> filter_bits_;
-  int k_hashes_;
-  int m_bits_;
+  uint8_t k_hashes_;
+  uint64_t m_bits_;
   int n_elements_;
   int p_error_;
 };
