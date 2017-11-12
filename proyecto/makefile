@@ -17,7 +17,9 @@ MurmurHash3.o : smhasher/src/MurmurHash3.h
 clean-utils:
 	@printf "Removing *~ *# files ... \n"
 	$(RM) *~ *#
+
 clean-exec:
 	@printf "Removing executables and object files ... \n"
 	$(RM) *.o $(TARGET)
+
 clean: clean-utils clean-exec
