@@ -3,7 +3,7 @@
 #include "smhasher/src/MurmurHash3.h"
 
 bloom_filter::bloom_filter(int m_bits, int k_hashes){
-  filter_bits_.resize(m_bits, 0);
+  filter_bits_.resize(m_bits, false);
   k_hashes_ = k_hashes; // fancy way to initialize
   m_bits_ = m_bits;
 }//bloom_filter constructor
@@ -35,7 +35,10 @@ void bloom_filter::add(int * data, std::size_t length){
 
   for( int i = 0; i < k_hashes_; i++){
     // until all k_hahes_ positions are filled
-    
+    filter_bits_[ith_hash(i,
+			  hash_values[0],
+			  hash_values[1],
+			  m_bits_)] = true;
   }// for
   
 }//add function
