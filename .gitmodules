@@ -1,0 +1,3 @@
+[submodule "proyecto/smhasher"]
+	path = proyecto/smhasher
+	url = https://github.com/aappleby/smhasher
