@@ -9,16 +9,21 @@ class bloom_filter {
   // n: n number of elements
   // p: error rate
 
- public:
-  bloom_filter(uint64_t size, uint8_t k_hashes);
-  void add(uint8_t * data, std::size_t length);
-  bool possibly_contained(uint8_t * data, std::size_t length);
  private:
   std::vector<bool> filter_bits_;
-  uint8_t k_hashes_;
-  uint64_t m_bits_;
+  int k_hashes_;
+  uint64_t m_bits_; // special type for double hashing
   int n_elements_;
-  int p_error_;
+  float p_error_;
+
+ public:
+  bloom_filter(int m_bits, int k_hashes);
+  void add(int * data, std::size_t length);
+  bool possibly_contained(int * data, std::size_t length);
+  float error_rate(void);
+  std::vector<int> double_hash_dbg(int * data,
+				   std::size_t length);
+  void print_bits_dbg(void);
 };
 
 #endif // PROYECTO_BLOOM_FILTER_H
