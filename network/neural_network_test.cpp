@@ -8,6 +8,7 @@ using namespace Eigen;
 
 void pprint(vector<ArrayXXf> vector) {
   for(int i=0; i<vector.size(); i++) {
+    cout << "Vector pos: " << i << endl;
     cout << vector[i] << endl;
   } // for
 } // vector pprint
@@ -33,15 +34,15 @@ int main(void) {
   // test back propagation
   ArrayXXf output = ArrayXXf::Random(1,1);
 
-  cout << "output array" << output << endl;
+  cout << "output array: " << output << endl;
   
   auto tuple = netw.backprop(input, output);
   auto vect1 = get<0>(tuple);
   auto vect2 = get<1>(tuple);
 
-  cout << "Nabla B: " << endl;
+  cout << "\tNabla B: " << endl;
   pprint(vect1);
-  cout << "Nabla W: " << endl;
+  cout << "\tNabla W: " << endl;
   pprint(vect2);
   
   
