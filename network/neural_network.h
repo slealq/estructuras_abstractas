@@ -14,7 +14,6 @@ class neural_network {
   vector<int> sizes_;
   vector<ArrayXXf> biases;
   vector<ArrayXXf> weights;
-  int myrandom(int i);
   ArrayXXf sigmoid(ArrayXXf z);
   ArrayXXf sigmoid_prime(ArrayXXf z);
   ArrayXXf cost_derivative(ArrayXXf output_activations,
@@ -41,8 +40,7 @@ class neural_network {
 	   int mini_batch_size,
 	   int eta,
 	   vector< tuple< ArrayXXf, int > >
-	   test_data = vector< tuple < ArrayXXf, int > >()
-	   );
+	   test_data = {} );
   
 }; // neural network class
 

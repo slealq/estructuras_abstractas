@@ -1,4 +1,5 @@
 #include "neural_network.h"
+#include "mnist_loader.h"
 #include <vector>
 #include <iostream>
 #include <Eigen/Dense>
@@ -12,6 +13,29 @@ void pprint(vector<ArrayXXf> vector) {
     cout << vector[i] << endl;
   } // for
 } // vector pprint
+
+void test_mnist_loader(void) {
+
+  mnist_loader train("data/train-images-idx3-ubyte",
+                     "data/train-labels-idx1-ubyte", 100);
+  mnist_loader test("data/t10k-images-idx3-ubyte",
+                    "data/t10k-labels-idx1-ubyte", 100);
+
+  int rows  = train.rows();
+  int cols  = train.cols();
+  int label = train.labels(0);
+  std::vector<double> image = train.images(0);
+
+  std::cout << "label: " << label << std::endl;
+  std::cout << "image: " << std::endl;
+  for (int y=0; y<rows; ++y) {
+    for (int x=0; x<cols; ++x) {
+      std::cout << ((image[y*cols+x] == 0.0)? ' ' : '*');
+    }
+    std::cout << std::endl;
+  }
+  
+} // test mnist loader
 
 int main(void) {
   vector<int> sizes {2, 3, 1};
@@ -48,5 +72,6 @@ int main(void) {
   auto test = float(vect1.size());
 
   cout << test*3.99 << endl;
-  
+
+  test_mnist_loader();
 } // main

@@ -11,9 +11,28 @@ using namespace std;
 using namespace Eigen;
 
 // HEPER FUNCTION ------------------------------------->
-int myrandom(int i) {
-  return rand()%i;
-} // my random
+template<typename T>
+std::vector<std::vector<T>> SplitVector(const std::vector<T>& vec, size_t n)
+{
+    std::vector<std::vector<T>> outVec;
+
+    size_t length = vec.size() / n;
+    size_t remain = vec.size() % n;
+
+    size_t begin = 0;
+    size_t end = 0;
+
+    for (size_t i = 0; i < std::min(n, vec.size()); ++i)
+    {
+        end += (remain > 0) ? (length + !!(remain--)) : length;
+
+        outVec.push_back(std::vector<T>(vec.begin() + begin, vec.begin() + end));
+
+        begin = end;
+    }
+
+    return outVec;
+}
 
 neural_network::neural_network(vector<int> sizes) {
   num_layers = sizes.size();
@@ -235,8 +254,7 @@ void neural_network::SGD(
 	   int mini_batch_size,
 	   int eta,
 	   vector< tuple< ArrayXXf, int > >
-	   test_data = vector< tuple < ArrayXXf, int > >()
-			 ) {
+	   test_data ) {
   srand( unsigned (time(0) ) );
   int n_test = 0;
   if( !test_data.empty() ) {
@@ -245,19 +263,35 @@ void neural_network::SGD(
 
   int n = trainning_data.size();
 
-  for(int i=0; i<epochs; i++) {
+  for(int j=0; j<epochs; j++) {
     // shuffle the trainning data
     random_shuffle(trainning_data.begin(),
-		   trainning_data.end(),
+		   trainning_data.end()
 		   );
 
     // split the mini batches
-    
+    auto mini_batches = SplitVector(trainning_data, mini_batch_size);
+
+    // iterate for each mini batch
+    for(int i=0; i<mini_batches.size(); i++) {
+      neural_network::update_mini_batches(mini_batches[i], eta);
+    } // for
+
+    if(n_test != 0) {
+      cout << " Epoch: "
+	   << j
+	   << neural_network::evaluate(test_data)
+	   << " / "
+	   << n_test
+	   << endl;
+    } // if ntest
+    else{
+      cout << "Epoch: " << j << " completed" << endl;
+    }
   } // for
   
   
 } // Gradient descent function for learning
-
 
 // DEBUGGER FUNCTIONS ---------------------------------->
 
