@@ -3,9 +3,17 @@
 #include <vector>
 #include <iostream>
 #include <tuple>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 using namespace Eigen;
+
+// HEPER FUNCTION ------------------------------------->
+int myrandom(int i) {
+  return rand()%i;
+} // my random
 
 neural_network::neural_network(vector<int> sizes) {
   num_layers = sizes.size();
@@ -219,6 +227,37 @@ void neural_network::update_mini_batches(vector<tuple<ArrayXXf,
   } // for biases
   
 } // update mini batches function
+
+void neural_network::SGD(
+	   vector< tuple< ArrayXXf, ArrayXXf > >
+	   trainning_data,
+	   int epochs,
+	   int mini_batch_size,
+	   int eta,
+	   vector< tuple< ArrayXXf, int > >
+	   test_data = vector< tuple < ArrayXXf, int > >()
+			 ) {
+  srand( unsigned (time(0) ) );
+  int n_test = 0;
+  if( !test_data.empty() ) {
+    n_test = test_data.size();
+  } // if
+
+  int n = trainning_data.size();
+
+  for(int i=0; i<epochs; i++) {
+    // shuffle the trainning data
+    random_shuffle(trainning_data.begin(),
+		   trainning_data.end(),
+		   );
+
+    // split the mini batches
+    
+  } // for
+  
+  
+} // Gradient descent function for learning
+
 
 // DEBUGGER FUNCTIONS ---------------------------------->
 

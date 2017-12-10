@@ -14,6 +14,7 @@ class neural_network {
   vector<int> sizes_;
   vector<ArrayXXf> biases;
   vector<ArrayXXf> weights;
+  int myrandom(int i);
   ArrayXXf sigmoid(ArrayXXf z);
   ArrayXXf sigmoid_prime(ArrayXXf z);
   ArrayXXf cost_derivative(ArrayXXf output_activations,
@@ -33,6 +34,15 @@ class neural_network {
   void print_feedforward_dbg(ArrayXXf input);
   tuple< vector<ArrayXXf>, vector<ArrayXXf> >
     backprop(ArrayXXf x, ArrayXXf y);  // only public for testing
+  void SGD(
+	   vector< tuple< ArrayXXf, ArrayXXf > >
+	   trainning_data,
+	   int epochs,
+	   int mini_batch_size,
+	   int eta,
+	   vector< tuple< ArrayXXf, int > >
+	   test_data = vector< tuple < ArrayXXf, int > >()
+	   );
   
 }; // neural network class
 
