@@ -18,9 +18,8 @@ class neural_network {
   ArrayXXf sigmoid_prime(ArrayXXf z);
   ArrayXXf cost_derivative(ArrayXXf output_activations,
 			   ArrayXXf y);
-  tuple< vector<ArrayXXf>, vector<ArrayXXf> >
-    backprop(ArrayXXf x, ArrayXXf y); 
-  void update_mini_batches(vector<tuple<ArrayXXf, ArrayXXf>> mini_batch,
+  void update_mini_batches(vector<tuple<ArrayXXf,
+			   ArrayXXf>> mini_batch,
 			   float eta);
   int evaluate(vector<tuple<ArrayXXf, int>> test_data);
   
@@ -32,6 +31,8 @@ class neural_network {
   void print_sigmoid_dbg(int layer, ArrayXXf input);
   void print_sigmoid_prime_dbg(int layer, ArrayXXf input);
   void print_feedforward_dbg(ArrayXXf input);
+  tuple< vector<ArrayXXf>, vector<ArrayXXf> >
+    backprop(ArrayXXf x, ArrayXXf y);  // only public for testing
   
 }; // neural network class
 

@@ -82,7 +82,7 @@ int neural_network::evaluate(vector<tuple<ArrayXXf, int>> test_data) {
   int assertions = 0;
 
   for(int i=0; i<test_results.size(); i++) {
-    if(get<0>(test_results) == get<1>(test_results)) {
+    if(get<0>(test_results[i]) == get<1>(test_results[i])) {
       assertions += 1;
     }
   } // for
@@ -161,8 +161,9 @@ neural_network::backprop(ArrayXXf x, ArrayXXf y) {
   
 } // back propagation function
 
-void update_mini_batches(vector<tuple<ArrayXXf, ArrayXXf>> mini_batch,
-			 float eta) {
+void neural_network::update_mini_batches(vector<tuple<ArrayXXf,
+					 ArrayXXf>> mini_batch,
+					 float eta) {
   /* Takes the mini batches and updates biases and weights */
   
   vector<ArrayXXf> nabla_b(num_layers);
@@ -181,6 +182,41 @@ void update_mini_batches(vector<tuple<ArrayXXf, ArrayXXf>> mini_batch,
 
   // for each tuple in the mini batch
 
+  for(int i=0; i<mini_batch.size(); i++) {
+    ArrayXXf x = get<0>(mini_batch[i]);
+    ArrayXXf y = get<1>(mini_batch[i]);
+
+    auto deltas = neural_network::backprop(x, y);
+    auto delta_nabla_b = get<0>(deltas);
+    auto delta_nabla_w = get<1>(deltas);
+
+    // reconstruct nabla_b
+    for(int j=0; j<delta_nabla_b.size(); j++) {
+      nabla_b[j] = nabla_b[j] + delta_nabla_b[j];
+    } // for
+
+    // reconstruct nabla_w
+    for(int j=0; j<delta_nabla_w.size(); j++) {
+      nabla_w[j] = nabla_w[j] + delta_nabla_w[j];
+    } // for
+
+  } // for
+
+  // update weights and biases
+  for(int i=0; i<weights.size(); i++) {
+    auto w = weights[i];
+    auto nw = nabla_w[i];
+    auto mini_len = float(mini_batch.size());
+    weights[i] = w - (eta/mini_len)*nw;
+  } // for weights
+
+  // biases
+  for(int i=0; i<biases.size(); i++) {
+    auto b = biases[i];
+    auto nb = nabla_b[i];
+    auto mini_len = float(mini_batch.size());
+    biases[i] = b - (eta/mini_len)*nb;
+  } // for biases
   
 } // update mini batches function
 
