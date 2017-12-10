@@ -14,12 +14,16 @@ class neural_network {
   // sizes: list containing number of neurons
   // on respective layer
   // biases and weights should be randmonly
-  // initialized, using Gaussian distribution, mean 0 and variance 1
+  // initialized, using Gaussian distribution,
+  // mean 0 and variance 1
   // first layer, the input layer, doesn't have biases.
   vector<int> sizes_;
   vector<ArrayXXf> biases;
   vector<ArrayXXf> weights;
   ArrayXXf sigmoid(ArrayXXf z);
+  ArrayXXf sigmoid_prime(ArrayXXf z);
+  ArrayXXf cost_derivative(ArrayXXf output_activations,
+			   ArrayXXf y);
   
  public:
   neural_network(vector<int> sizes);
@@ -28,9 +32,10 @@ class neural_network {
     backprop(ArrayXXf x, ArrayXXf y); 
   void print_biases_dbg(void);
   void print_weights_dbg(void);
-  void print_sigmoid_dbg(ArrayXXf z);
+  void print_sigmoid_dbg(int layer, ArrayXXf input);
+  void print_sigmoid_prime_dbg(int layer, ArrayXXf input);
   void print_feedforward_dbg(ArrayXXf input);
-    
+  
 }; // neural network class
 
 #endif // NEURAL_NETWORK

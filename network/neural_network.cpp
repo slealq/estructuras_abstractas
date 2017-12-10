@@ -31,6 +31,12 @@ ArrayXXf neural_network::sigmoid(ArrayXXf z) {
   
 } // sigmoid function
 
+ArrayXXf neural_network::sigmoid_prime(ArrayXXf z) {
+  /* Basic multi-dimensional sigmoid prime function */
+  return sigmoid(z)*(1-sigmoid(z));
+  
+} // sigmoid prime function
+
 ArrayXXf neural_network::feedforward(ArrayXXf input) {
   /* This function is meant to get the output of
      the network given an input */
@@ -43,6 +49,12 @@ ArrayXXf neural_network::feedforward(ArrayXXf input) {
   } // for
   return output;
 } // feed forward
+
+ArrayXXf neural_network::cost_derivative(ArrayXXf output_activations,
+			 ArrayXXf y) {
+  return output_activations - y;
+  
+} // cost derivative function
 
 tuple< vector<ArrayXXf>, vector<ArrayXXf> >
 neural_network::backprop(ArrayXXf x, ArrayXXf y) {
@@ -64,8 +76,70 @@ neural_network::backprop(ArrayXXf x, ArrayXXf y) {
   } // for
 
   // feed forward part
+  ArrayXXf activation = x;
+  vector<ArrayXXf> activations; // store all the activations
+  vector<ArrayXXf> zs; // all z vectors
 
+  // put the first activation layer
+  activations.push_back(x);
 
+  // get all activations and zs
+  for(int i=1; i<num_layers; i++) {
+    ArrayXXf z = ( (
+		    weights[i].matrix() *
+		    activation.matrix()
+		    ).array()
+			   + biases[i] );
+    zs.push_back(z);
+    activation = neural_network::sigmoid(z);
+    activations.push_back(activation);
+  } // for
+
+  // backward pass
+  ArrayXXf delta =
+    neural_network::cost_derivative(activations.back(), y)
+    * neural_network::sigmoid_prime(zs.back()); 
+
+  cout << "ALL GOOD SO FAR 0" << endl;
+  cout << "delta: " << delta << endl;
+  
+  nabla_b[nabla_b.size()-1] = delta;
+  nabla_w[nabla_w.size()-1] = ( delta.matrix()
+			       * activations[activations.size()-2].
+			       matrix().transpose() ).array();
+  cout << "ALL GOOD SO FAR 1" << endl;
+    
+  // for loop going backwards
+
+  for(int i=2; i<num_layers; i++) {
+    ArrayXXf z = zs[zs.size()-i];
+    ArrayXXf sp = neural_network::sigmoid_prime(z);
+    cout << "weights " << weights[weights.size()-i+1].
+      matrix().
+      transpose() << endl;
+    cout << "delta " << delta.matrix() << endl;
+    cout << "weights dot delta: "
+      << (
+	  weights[weights.size()-i+1].
+	  matrix().
+	  transpose()
+	  * delta.matrix()
+	  ).array()
+      << endl;
+    cout << "sp " << sp << endl; 
+    delta = (weights[weights.size()-i+1].matrix().transpose()*delta.matrix()).array() * sp;
+    cout << "ALL GOOD SO FAR 2" << endl;
+
+    nabla_b[nabla_b.size()-i] = delta;
+    nabla_w[nabla_b.size()-i] = (
+				 delta.matrix() *
+				 activations[activations.size()-i-1].
+				 matrix().
+				 transpose()
+				 ).array(); 
+    cout << "ALL GOOD SO FAR 3" << endl;    
+  } // for
+  
   return make_tuple(nabla_b, nabla_w);
   
 } // back propagation function
@@ -92,12 +166,26 @@ void neural_network::print_weights_dbg(void) {
   }
 } // print weights
 
-void neural_network::print_sigmoid_dbg(ArrayXXf z) {
+void neural_network::print_sigmoid_dbg(int layer,
+				       ArrayXXf input) {
   cout << "Sigmoid function for input: "
-       << neural_network::sigmoid(z)
+       << neural_network::sigmoid(
+				  (weights[layer].matrix()
+				   * input.matrix()).array()
+				  + biases[layer])
        << endl;
   
 } // print sigmoid
+
+void neural_network::print_sigmoid_prime_dbg(int layer,
+					     ArrayXXf input) {
+  cout << "Sigmoid prime function for input: "
+       << neural_network::sigmoid_prime(
+				  (weights[layer].matrix()
+				   * input.matrix()).array()
+				  + biases[layer])
+       << endl;
+} // print sigmoid prime
 
 void neural_network::print_feedforward_dbg(ArrayXXf input) {
   cout << "FeedForward z: "
