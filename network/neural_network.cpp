@@ -51,10 +51,18 @@ ArrayXXf neural_network::feedforward(ArrayXXf input) {
 } // feed forward
 
 ArrayXXf neural_network::cost_derivative(ArrayXXf output_activations,
-			 ArrayXXf y) {
+					 ArrayXXf y) {
   return output_activations - y;
   
 } // cost derivative function
+
+int evaluate(vector<tuple<ArrayXXf, ArrayXXf>> test_data) {
+  /* Evaluates which number is the output, and returns 
+     the sum of outputs x which are equal to the desired y */
+
+  vector<tuple<int, int>> test_results; // the x, y ints are saved here.
+  
+} // test data
 
 tuple< vector<ArrayXXf>, vector<ArrayXXf> >
 neural_network::backprop(ArrayXXf x, ArrayXXf y) {
@@ -100,36 +108,19 @@ neural_network::backprop(ArrayXXf x, ArrayXXf y) {
     neural_network::cost_derivative(activations.back(), y)
     * neural_network::sigmoid_prime(zs.back()); 
 
-  cout << "ALL GOOD SO FAR 0" << endl;
-  cout << "delta: " << delta << endl;
-  
   nabla_b[nabla_b.size()-1] = delta;
   nabla_w[nabla_w.size()-1] = ( delta.matrix()
 			       * activations[activations.size()-2].
 			       matrix().transpose() ).array();
-  cout << "ALL GOOD SO FAR 1" << endl;
     
   // for loop going backwards
 
   for(int i=2; i<num_layers; i++) {
     ArrayXXf z = zs[zs.size()-i];
     ArrayXXf sp = neural_network::sigmoid_prime(z);
-    cout << "weights " << weights[weights.size()-i+1].
-      matrix().
-      transpose() << endl;
-    cout << "delta " << delta.matrix() << endl;
-    cout << "weights dot delta: "
-      << (
-	  weights[weights.size()-i+1].
-	  matrix().
-	  transpose()
-	  * delta.matrix()
-	  ).array()
-      << endl;
-    cout << "sp " << sp << endl; 
-    delta = (weights[weights.size()-i+1].matrix().transpose()*delta.matrix()).array() * sp;
-    cout << "ALL GOOD SO FAR 2" << endl;
-
+    delta = (
+	     weights[weights.size()-i+1].matrix().transpose()
+	     *delta.matrix()).array() * sp;
     nabla_b[nabla_b.size()-i] = delta;
     nabla_w[nabla_b.size()-i] = (
 				 delta.matrix() *
@@ -137,12 +128,34 @@ neural_network::backprop(ArrayXXf x, ArrayXXf y) {
 				 matrix().
 				 transpose()
 				 ).array(); 
-    cout << "ALL GOOD SO FAR 3" << endl;    
   } // for
   
   return make_tuple(nabla_b, nabla_w);
   
 } // back propagation function
+
+void update_mini_batches(vector<tuple<ArrayXXf, ArrayXXf>> mini_batch,
+			 float eta) {
+  /* Takes the mini batches and updates biases and weights */
+  
+  vector<ArrayXXf> nabla_b(num_layers);
+  vector<ArrayXXf> nabla_w(num_layers);
+
+  // initialize as zero arrays with sizes like biases
+  // and weights
+
+  for(int i=1; i<num_layers; i++) {
+    nabla_b[i] = ArrayXXf::Zero(biases[i].rows(),
+				 biases[i].cols());
+
+    nabla_w[i] = ArrayXXf::Zero(weights[i].rows(),
+				weights[i].cols());
+  } // for
+
+  // for each tuple in the mini batch
+
+  
+} // update mini batches function
 
 // DEBUGGER FUNCTIONS ---------------------------------->
 
