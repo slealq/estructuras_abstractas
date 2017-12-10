@@ -44,6 +44,9 @@ int main(void) {
   pprint(vect1);
   cout << "\tNabla W: " << endl;
   pprint(vect2);
-  
+
+  auto test = float(vect1.size());
+
+  cout << test*3.99 << endl;
   
 } // main
