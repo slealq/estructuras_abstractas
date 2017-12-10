@@ -56,11 +56,38 @@ ArrayXXf neural_network::cost_derivative(ArrayXXf output_activations,
   
 } // cost derivative function
 
-int evaluate(vector<tuple<ArrayXXf, ArrayXXf>> test_data) {
+int neural_network::evaluate(vector<tuple<ArrayXXf, int>> test_data) {
   /* Evaluates which number is the output, and returns 
      the sum of outputs x which are equal to the desired y */
 
   vector<tuple<int, int>> test_results; // the x, y ints are saved here.
+
+  for(int i=0; i<test_data.size(); i++) {
+    ArrayXXf act_output =
+      neural_network::feedforward(get<0>(test_data[i]));
+
+    //get location of maximum
+    ArrayXXf::Index maxRow, maxCol;
+    float max = act_output.maxCoeff(&maxRow, &maxCol);
+
+    //new tuple - maxRow is the number whose score is the highest.
+    tuple<int, int> pair = make_tuple( maxRow,
+				       get<1>(test_data[i]) );
+
+    //append test results
+    test_results.push_back(pair);
+  } // for
+
+  // sum the ones that are equal
+  int assertions = 0;
+
+  for(int i=0; i<test_results.size(); i++) {
+    if(get<0>(test_results) == get<1>(test_results)) {
+      assertions += 1;
+    }
+  } // for
+  
+  return assertions;
   
 } // test data
 

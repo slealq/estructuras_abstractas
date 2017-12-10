@@ -22,7 +22,7 @@ class neural_network {
     backprop(ArrayXXf x, ArrayXXf y); 
   void update_mini_batches(vector<tuple<ArrayXXf, ArrayXXf>> mini_batch,
 			   float eta);
-  int evaluate(vector<tuple<ArrayXXf, ArrayXXf>> test_data);
+  int evaluate(vector<tuple<ArrayXXf, int>> test_data);
   
  public:
   neural_network(vector<int> sizes);
