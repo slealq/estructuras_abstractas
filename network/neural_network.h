@@ -11,12 +11,6 @@ using namespace std;
 class neural_network {
  private:
   int num_layers;
-  // sizes: list containing number of neurons
-  // on respective layer
-  // biases and weights should be randmonly
-  // initialized, using Gaussian distribution,
-  // mean 0 and variance 1
-  // first layer, the input layer, doesn't have biases.
   vector<int> sizes_;
   vector<ArrayXXf> biases;
   vector<ArrayXXf> weights;
@@ -24,12 +18,15 @@ class neural_network {
   ArrayXXf sigmoid_prime(ArrayXXf z);
   ArrayXXf cost_derivative(ArrayXXf output_activations,
 			   ArrayXXf y);
+  tuple< vector<ArrayXXf>, vector<ArrayXXf> >
+    backprop(ArrayXXf x, ArrayXXf y); 
+  void update_mini_batches(vector<tuple<ArrayXXf, ArrayXXf>> mini_batch,
+			   float eta);
+  int evaluate(vector<tuple<ArrayXXf, ArrayXXf>> test_data);
   
  public:
   neural_network(vector<int> sizes);
   ArrayXXf feedforward(ArrayXXf input);
-  tuple< vector<ArrayXXf>, vector<ArrayXXf> >
-    backprop(ArrayXXf x, ArrayXXf y); 
   void print_biases_dbg(void);
   void print_weights_dbg(void);
   void print_sigmoid_dbg(int layer, ArrayXXf input);
