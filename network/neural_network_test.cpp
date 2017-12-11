@@ -5,6 +5,8 @@
 #include <Eigen/Dense>
 #include <stdlib.h>
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core/eigen.hpp>
 
 using namespace std;
 using namespace Eigen;
@@ -82,10 +84,32 @@ vector < tuple < ArrayXXf, int > > test_data_loader (void) {
 
 void save_image(void) {
 
-  VideoCapture cap(0);
-  
-  // Get the frame
-  Mat save_img; cap >> save_img;
+  VideoCapture cap(1); // capture webcam 1
+
+  Mat save_img;
+  while(1) {
+    cap >> save_img;
+
+    if(save_img.empty())
+      break;
+
+    rectangle( save_img,
+	       Point(640/2-16, 480/2-16),
+	       Point(640/2+16, 480/2+16),
+	       Scalar(0, 255, 255),
+	       1,
+	       8
+	       );
+    
+    // display the resulting frame
+    imshow( "Frame", save_img );
+
+    // Press ESC on keyboard to exit
+    char c = (char)waitKey(25);
+    if(c==27)
+      break;
+        
+  }
   
   if(save_img.empty())
     {
@@ -95,8 +119,14 @@ void save_image(void) {
   imshow("picture", save_img);
   waitKey(0);
 
+  // realease capture object
+  cap.release();
+
+  // close all frames
+  destroyAllWindows();
+  
   // Save the frame into a file
-  imwrite("test.jpg", save_img); // A JPG FILE IS BEING SAVED
+  imwrite("webcam.jpg", save_img); // A JPG FILE IS BEING SAVED
 }
 
 void crop_image(string string) {
@@ -127,17 +157,90 @@ void crop_image(string string) {
     cv::imshow("crop", crop);
     cv::waitKey(0);
 
-    cv::imwrite("noises_cropped.png", crop);
-
+    // close all frames
+    destroyAllWindows();
+    
+    cv::imwrite("colored_number.png", crop);
 }
 
+ArrayXXf generate_input(string pic_name) {
+  // convert to char *
+  const char *cstr = pic_name.c_str();
+
+  ArrayXXf input;
+  
+  cv::Mat img = cv::imread(cstr);
+  if (img.empty())
+    {
+      std::cout << "!!! imread() failed to open target image" << std::endl;
+      //return input;
+    }
+
+  cv::Mat greyMat;
+  cv::cvtColor(img, greyMat, cv::COLOR_BGR2GRAY);
+
+  float threshold=128.0;
+  cout << "Enter the desired threshold: ";
+  cin >> threshold;
+
+  cout << greyMat << endl;
+  
+  Mat img_bw = greyMat > threshold; // threshold
+
+  MatrixXf greyMatEi;
+  cv2eigen(img_bw, greyMatEi);
+
+  //covert greyMatEi to array
+
+  // transpose
+  cout << greyMatEi; 
+
+
+  ArrayXXf output(784, 1);
+
+  for(int i=0; i<28; i++){
+    for(int j=0; j<28; j++) {
+      if(greyMatEi(i,j) == 0) {
+	output(i*28+j, 0) = 1.0;
+      }
+      else{
+	output(i*28+j, 0) = 0.0;
+      }
+      //output(i*28+j, 0) = greyMatEi(i, j);
+    }
+  }
+  
+  //Eigen::Map<ArrayXXf> output(greyMatE.data(), 784, 1);
+
+  // normalize
+  //output = output / 255.0;
+
+  // invert 1 and 0s
+  
+  return output;
+  
+} // generate input for feedforward
+
+void pprint(ArrayXXf image) {
+  for(int y=0; y<28; ++y) {
+    for(int x=0; x<28; ++x) {
+      cout << ( (image(y*28+x, 0) == 0.0)? ' ' : '*' );
+    }
+    cout << endl;
+  }
+  
+} // pprint an arrayxxf image
+
 int main(void) {
-  int eta;
+  float eta;
   int hidden_layer;
   int epochs;
 
-  save_image();
-  crop_image("test.jpg");
+  //save_image();
+  //crop_image("webcam.jpg");
+  //auto input = generate_input("colored_number.png");
+  //cout << input << endl;
+  //pprint(input);
   
   cout << "Choose network hidden layer n: ";
   cin >> hidden_layer;
@@ -156,6 +259,28 @@ int main(void) {
   auto trainning_data = trainning_data_loader();
   auto test_data = test_data_loader();
 
+  pprint(get<0>(trainning_data[0]));
+  
   net.SGD(trainning_data, epochs, 10, eta, test_data);
+
+  int loop = 1;
+
+  while(loop == 1) {
+    cout << "Make test? : (1 for yes, otherwise for no) " << endl;
+    cin >> loop;
+    if( loop != 1) {
+      break;
+    }
+
+    save_image();
+    crop_image("webcam.jpg");
+    auto input = generate_input("colored_number.png");
+    //cout << input << endl;
+    pprint(input);
+
+    cout << "Neural network result: " << endl;
+    cout << net.feedforward(input) << endl;
+    
+  }
   
 } // main
