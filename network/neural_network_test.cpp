@@ -3,16 +3,12 @@
 #include <vector>
 #include <iostream>
 #include <Eigen/Dense>
+#include <stdlib.h>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace Eigen;
-
-void pprint(vector<ArrayXXf> vector) {
-  for(int i=0; i<vector.size(); i++) {
-    cout << "Vector pos: " << i << endl;
-    cout << vector[i] << endl;
-  } // for
-} // vector pprint
+using namespace cv;
 
 vector < tuple < ArrayXXf, ArrayXXf > > trainning_data_loader (void) {
 
@@ -32,7 +28,7 @@ vector < tuple < ArrayXXf, ArrayXXf > > trainning_data_loader (void) {
 
     // save the image:
     for(int j=0; j<784; j++) {
-      input(j, 0) = image[j];
+      input(j, 0) = abs(image[j]);
     } // for j
 
     // output - 10th dimensional array
@@ -69,7 +65,7 @@ vector < tuple < ArrayXXf, int > > test_data_loader (void) {
 
     // save the image:
     for(int j=0; j<784; j++) {
-      input(j, 0) = image[j];
+      input(j, 0) = abs(image[j]);
     } // for j
 
     // output - 10th dimensional array
@@ -84,77 +80,82 @@ vector < tuple < ArrayXXf, int > > test_data_loader (void) {
   return output_v;
 } // test data loader
 
-void test_mnist_loader(void) {
+void save_image(void) {
 
-  mnist_loader train("dataset/train-images-idx3-ubyte",
-                     "dataset/train-labels-idx1-ubyte", 100);
-  mnist_loader test("dataset/t10k-images-idx3-ubyte",
-                    "dataset/t10k-labels-idx1-ubyte", 100);
+  VideoCapture cap(0);
   
-  int rows  = train.rows();
-  int cols  = train.cols();
-  int label = train.labels(1);
-  std::vector<double> image = train.images(1);
-
-  std::cout << "label: " << label << std::endl;
-  std::cout << "image: " << std::endl;
-  for (int y=0; y<rows; ++y) {
-    for (int x=0; x<cols; ++x) {
-      std::cout << ((image[y*cols+x] == 0.0)? ' ' : '*');
+  // Get the frame
+  Mat save_img; cap >> save_img;
+  
+  if(save_img.empty())
+    {
+      std::cerr << "Something is wrong with the webcam, could not get frame." << std::endl;
     }
-    std::cout << std::endl;
-  }
+  // show image
+  imshow("picture", save_img);
+  waitKey(0);
+
+  // Save the frame into a file
+  imwrite("test.jpg", save_img); // A JPG FILE IS BEING SAVED
+}
+
+void crop_image(string string) {
+  // convert to char *
+  const char *cstr = string.c_str();
   
-} // test mnist loader
+  cv::Mat img = cv::imread(cstr);
+    if (img.empty())
+    {
+        std::cout << "!!! imread() failed to open target image" << std::endl;
+        return;        
+    }
 
+    /* Set Region of Interest */
 
+    int offset_x = 640/2-14;
+    int offset_y = 480/2-14;
+
+    cv::Rect roi;
+    roi.x = offset_x;
+    roi.y = offset_y;
+    roi.width = 28;
+    roi.height = 28;
+
+    /* Crop the original image to the defined ROI */
+
+    cv::Mat crop = img(roi);
+    cv::imshow("crop", crop);
+    cv::waitKey(0);
+
+    cv::imwrite("noises_cropped.png", crop);
+
+}
 
 int main(void) {
-  vector<int> sizes {2, 3, 1};
-  neural_network netw(sizes);
-  netw.print_biases_dbg();
-  netw.print_weights_dbg();
+  int eta;
+  int hidden_layer;
+  int epochs;
 
-  // test z vector
-  ArrayXXf input = ArrayXXf::Random(2,1);
-  cout << "Test vector: " << input << endl;
-
-  // test feedforward function
-  //cout << "FeedForward Z: " << netw.feedforward(z) << endl;
-  netw.print_feedforward_dbg(input);
-
-  // test sigmoid function
-  netw.print_sigmoid_dbg(1, input);
-  netw.print_sigmoid_prime_dbg(1, input);
-
-  // test back propagation
-  ArrayXXf output = ArrayXXf::Random(1,1);
-
-  cout << "output array: " << output << endl;
+  save_image();
+  crop_image("test.jpg");
   
-  auto tuple = netw.backprop(input, output);
-  auto vect1 = get<0>(tuple);
-  auto vect2 = get<1>(tuple);
+  cout << "Choose network hidden layer n: ";
+  cin >> hidden_layer;
 
-  cout << "\tNabla B: " << endl;
-  pprint(vect1);
-  cout << "\tNabla W: " << endl;
-  pprint(vect2);
-
-  auto test = float(vect1.size());
-
-  //cout << test*3.99 << endl;
-
-  //test_mnist_loader();
-
-  //trainning_data_loader();
-
-  vector<int> size {784, 100, 10};
+  cout << "\nChoose how many epochs: ";
+  cin >> epochs;
+  
+  cout << "\nChoose network learning rate: ";
+  cin >> eta;
+  
+  cout << "\nBeginning learning process ..." << endl;
+  
+  vector<int> size {784, hidden_layer, 10};
   neural_network net(size);
 
   auto trainning_data = trainning_data_loader();
   auto test_data = test_data_loader();
-  
-  net.SGD(trainning_data, 30, 10, 3.0, test_data);
+
+  net.SGD(trainning_data, epochs, 10, eta, test_data);
   
 } // main
