@@ -8,6 +8,8 @@ EIGEN = ../network/eigen/
 CFLAGS = -c $(INCLUDES) $(DEBUG)
 LFLAGS = $(INCLUDES) $(DEBUG)
 TARGET = neural_network
+OPENCV = `pkg-config opencv --cflags --libs`
+LIBS = $(OPENCV)
 
 all : test
 
@@ -16,10 +18,10 @@ compile : $(TARGET)
 test: $(TARGET) data
 
 $(TARGET) : $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o $(TARGET)
+	$(CC) $(LFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
 
 neural_network.o : neural_network.h
-	$(CC) $(CFLAGS) neural_network.cpp
+	$(CC) $(CFLAGS) neural_network.cpp 
 
 mnist_loader.o : mnist-loader/include/mnist_loader.h
 	$(CC) $(CFLAGS) mnist-loader/src/mnist_loader.cc
