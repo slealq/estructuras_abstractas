@@ -15,9 +15,6 @@ using namespace Eigen;
 template<typename T>
 std::vector<std::vector<T>> SplitVector(const std::vector<T>& vec, size_t n)
 {
-  // measure time
-  auto start = chrono::high_resolution_clock::now();
-  
   std::vector<std::vector<T>> outVec;
   
   size_t length = vec.size() / n;
@@ -35,13 +32,6 @@ std::vector<std::vector<T>> SplitVector(const std::vector<T>& vec, size_t n)
       begin = end;
     }
 
-  // measure time
-  auto finish = chrono::high_resolution_clock::now();
-  chrono::duration<double> elapsed = finish-start;
-  cout << "Function SplitVector time: "
-       << elapsed.count() 
-       << " s\n" ;
-  
   return outVec;
 }
 
@@ -126,17 +116,14 @@ int neural_network::evaluate(vector<tuple<ArrayXXf, int>> test_data) {
   } // for
   
   return assertions;
-  
+
 } // test data
 
 tuple< vector<ArrayXXf>, vector<ArrayXXf> >
-neural_network::backprop(ArrayXXf x, ArrayXXf y) {
+neural_network::backprop(ArrayXXf &x, ArrayXXf &y) {
   /* Returns the bakpropagation result for a given tuple
    of input and output */
 
-  // measure time
-  //auto start = chrono::high_resolution_clock::now();
-  
   vector<ArrayXXf> nabla_b(num_layers);
   vector<ArrayXXf> nabla_w(num_layers);
 
@@ -213,13 +200,6 @@ neural_network::backprop(ArrayXXf x, ArrayXXf y) {
 				 ).array(); 
   } // for
 
-    // measure time
-  //auto finish = chrono::high_resolution_clock::now();
-  //chrono::duration<double> elapsed = finish-start;
-  //cout << "Function BackProp time: "
-  //     << elapsed.count() 
-  //     << " s\n" ;
-  
   return make_tuple(nabla_b, nabla_w);
   
 } // back propagation function
@@ -229,9 +209,6 @@ void neural_network::update_mini_batches(vector<tuple<ArrayXXf,
 					 float eta) {
   /* Takes the mini batches and updates biases and weights */
 
-  // measure time
-  auto start = chrono::high_resolution_clock::now();
-  
   vector<ArrayXXf> nabla_b(num_layers);
   vector<ArrayXXf> nabla_w(num_layers);
 
@@ -250,9 +227,6 @@ void neural_network::update_mini_batches(vector<tuple<ArrayXXf,
 
   // for each tuple in the mini batch
 
-  //ArrayXXf x;
-  //ArrayXXf y;
-  
   for(int i=0; i<mini_batch.size(); i++) {
     auto x = get<0>(mini_batch[i]);
     auto y = get<1>(mini_batch[i]);
@@ -296,15 +270,24 @@ void neural_network::update_mini_batches(vector<tuple<ArrayXXf,
     biases[i] = b - (eta/mini_len)*nb;
   } // for biases
 
-  // measure time
-  auto finish = chrono::high_resolution_clock::now();
-  chrono::duration<double> elapsed = finish-start;
-  cout << "Function Update Mini Batches time: "
-       << elapsed.count() 
-       << " s\n" ;
-
-  
 } // update mini batches function
+
+void pprint(vector<tuple<ArrayXXf, ArrayXXf>> &trainning_data) {
+  ArrayXXf x;
+  ArrayXXf y;
+
+  cout << "trainning data size" << trainning_data.size() << endl;
+  
+  x = get<0>(trainning_data[0]);
+  y = get<1>(trainning_data[0]);
+  
+  cout << "X: " << endl;
+  cout << x << endl;
+  
+  cout << "Y: " << endl;
+  cout << y << endl;
+ 
+} // pprint
 
 void neural_network::SGD(
 	   vector< tuple< ArrayXXf, ArrayXXf > >
@@ -314,6 +297,9 @@ void neural_network::SGD(
 	   int eta,
 	   vector< tuple< ArrayXXf, int > >
 	   test_data ) {
+  // debug trainning data
+  //pprint(trainning_data);
+
   srand( unsigned (time(0) ) );
   int n_test = 0;
   if( !test_data.empty() ) {
@@ -345,6 +331,7 @@ void neural_network::SGD(
     if(n_test != 0) {
       cout << " Epoch: "
 	   << j
+	   << " "
 	   << neural_network::evaluate(test_data)
 	   << " / "
 	   << n_test

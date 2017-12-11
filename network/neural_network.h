@@ -32,7 +32,7 @@ class neural_network {
   void print_sigmoid_prime_dbg(int layer, ArrayXXf input);
   void print_feedforward_dbg(ArrayXXf input);
   tuple< vector<ArrayXXf>, vector<ArrayXXf> >
-    backprop(ArrayXXf x, ArrayXXf y);  // only public for testing
+    backprop(ArrayXXf &x, ArrayXXf &y);  // only public for testing
   void SGD(
 	   vector< tuple< ArrayXXf, ArrayXXf > >
 	   trainning_data,
