@@ -1,3 +1,7 @@
 [submodule "proyecto/smhasher"]
 	path = proyecto/smhasher
 	url = https://github.com/aappleby/smhasher
+
+[submodule "network/mnist-loader"]
+	   path = network/mnist-loader
+	   url = https://github.com/arpaka/mnist-loader
