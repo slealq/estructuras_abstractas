@@ -14,17 +14,87 @@ void pprint(vector<ArrayXXf> vector) {
   } // for
 } // vector pprint
 
+vector < tuple < ArrayXXf, ArrayXXf > > trainning_data_loader (void) {
+
+  mnist_loader train("dataset/train-images-idx3-ubyte",
+		     "dataset/train-labels-idx1-ubyte", 50000);
+
+  vector< tuple < ArrayXXf, ArrayXXf > > output_v;
+
+  int size = train.size();
+
+  for(int i = 0; i < size; i++) {
+    int label = train.labels(i);
+    std::vector<double> image = train.images(i);
+    
+    // image - entry arrayxxf
+    ArrayXXf input = ArrayXXf::Zero(784, 1);
+
+    // save the image:
+    for(int j=0; j<784; j++) {
+      input(j, 0) = image[j];
+    } // for j
+
+    // output - 10th dimensional array
+    ArrayXXf output = ArrayXXf::Zero(10, 1);
+
+    // save the number in the label-th position
+    output(label, 0) = 1.0;
+
+    // create a tuple
+    auto tuple = make_tuple(input, output);
+
+    output_v.push_back(tuple);
+    
+  } // for i
+
+  return output_v;
+} // trainning data loader
+
+vector < tuple < ArrayXXf, int > > test_data_loader (void) {
+
+  mnist_loader test("dataset/t10k-images-idx3-ubyte",
+                    "dataset/t10k-labels-idx1-ubyte", 10000);
+  
+  vector< tuple < ArrayXXf, int > > output_v;
+
+  int size = test.size();
+
+  for(int i = 0; i < size; i++) {
+    int label = test.labels(i);
+    std::vector<double> image = test.images(i);
+    
+    // image - entry arrayxxf
+    ArrayXXf input = ArrayXXf::Zero(784, 1);
+
+    // save the image:
+    for(int j=0; j<784; j++) {
+      input(j, 0) = image[j];
+    } // for j
+
+    // output - 10th dimensional array
+    int output = label;
+
+    auto tuple = make_tuple(input, output);
+
+    output_v.push_back(tuple);
+    
+  } // for i
+
+  return output_v;
+} // test data loader
+
 void test_mnist_loader(void) {
 
-  mnist_loader train("data/train-images-idx3-ubyte",
-                     "data/train-labels-idx1-ubyte", 100);
-  mnist_loader test("data/t10k-images-idx3-ubyte",
-                    "data/t10k-labels-idx1-ubyte", 100);
-
+  mnist_loader train("dataset/train-images-idx3-ubyte",
+                     "dataset/train-labels-idx1-ubyte", 100);
+  mnist_loader test("dataset/t10k-images-idx3-ubyte",
+                    "dataset/t10k-labels-idx1-ubyte", 100);
+  
   int rows  = train.rows();
   int cols  = train.cols();
-  int label = train.labels(0);
-  std::vector<double> image = train.images(0);
+  int label = train.labels(1);
+  std::vector<double> image = train.images(1);
 
   std::cout << "label: " << label << std::endl;
   std::cout << "image: " << std::endl;
@@ -36,6 +106,8 @@ void test_mnist_loader(void) {
   }
   
 } // test mnist loader
+
+
 
 int main(void) {
   vector<int> sizes {2, 3, 1};
@@ -71,7 +143,18 @@ int main(void) {
 
   auto test = float(vect1.size());
 
-  cout << test*3.99 << endl;
+  //cout << test*3.99 << endl;
 
-  test_mnist_loader();
+  //test_mnist_loader();
+
+  //trainning_data_loader();
+
+  vector<int> size {784, 100, 10};
+  neural_network net(size);
+
+  auto trainning_data = trainning_data_loader();
+  auto test_data = test_data_loader();
+  
+  net.SGD(trainning_data, 30, 10, 3.0, test_data);
+  
 } // main
