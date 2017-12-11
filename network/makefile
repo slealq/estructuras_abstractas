@@ -3,6 +3,7 @@ CC = g++
 INCLUDES = -I$(EIGEN)
 INCLUDES += -Imnist-loader/include
 DEBUG = -g
+DEBUG += -O3
 EIGEN = ../network/eigen/
 CFLAGS = -c $(INCLUDES) $(DEBUG)
 LFLAGS = $(INCLUDES) $(DEBUG)
